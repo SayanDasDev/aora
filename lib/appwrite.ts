@@ -4,10 +4,8 @@ import {
   Avatars,
   Client,
   Databases,
-  // Databases,
   ID,
   Query,
-  // Query,
   // Storage,
 } from "react-native-appwrite/src";
 
@@ -20,12 +18,21 @@ export const appwriteConfig = {
   videoCollectionId: "videos",
 };
 
+const {
+  endpoint,
+  platform,
+  projectId,
+  databaseId,
+  userCollectionId,
+  videoCollectionId,
+} = appwriteConfig;
+
 const client = new Client();
 
 client
-  .setEndpoint(appwriteConfig.endpoint)
-  .setProject(appwriteConfig.projectId)
-  .setPlatform(appwriteConfig.platform);
+  .setEndpoint(endpoint)
+  .setProject(projectId)
+  .setPlatform(platform);
 
 const account = new Account(client);
 const avatars = new Avatars(client);
@@ -47,8 +54,8 @@ export const createUser = async (email: string, password: string, username: stri
     await signIn(email, password);
 
     const newUser = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      databaseId,
+      userCollectionId,
       ID.unique(),
       {
         accountId: newAccount.$id,
@@ -108,14 +115,29 @@ export const getCurrentUser = async () => {
   try {
     const currentAccount = await getAccount();
     const currentUser = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      databaseId,
+      userCollectionId,
       [Query.equal("accountId", currentAccount.$id)]
     );
 
     if(!currentUser) throw new Error;
 
     return currentUser.documents[0];
+  } catch (error: any) {
+    if(error instanceof AppwriteException){
+      console.error(error);
+      throw error;
+    }else{
+      console.error(error);
+      throw new Error(error);
+    }
+  }
+}
+
+export const getAllPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(databaseId, videoCollectionId);
+    return posts.documents;
   } catch (error: any) {
     if(error instanceof AppwriteException){
       console.error(error);
