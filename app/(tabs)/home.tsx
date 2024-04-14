@@ -8,10 +8,13 @@ import EmptyState from "@/components/empty-state";
 import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
 import { useAppwrite } from "@/lib/useAppwrite";
 import VideoCard from "@/components/video-card";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const Home = () => {
   const { data: posts, refetch } = useAppwrite(getAllPosts);
   const { data: latestPosts } = useAppwrite(getLatestPosts);
+
+  const { user } = useGlobalContext();
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -29,14 +32,14 @@ const Home = () => {
         keyExtractor={(item: any) => item.$id}
         renderItem={({ item }: { item: any }) => <VideoCard posts={item} />}
         ListHeaderComponent={() => (
-          <View className="my-6 px-4 space-y-6">
+          <View className="my-6 px-4 space-y-4">
             <View className="justify-between items-start flex-row mb-6">
               <View>
                 <Text className="text-gray-100 text-sm font-pmedium">
                   Welcome!
                 </Text>
                 <Text className="text-2xl text-white font-psemibold">
-                  SayanDasDev
+                  {user?.username}
                 </Text>
               </View>
               <View className="mt-1.5">
@@ -48,7 +51,7 @@ const Home = () => {
               </View>
             </View>
             <SearchInput placeholder="Search for a video topic" />
-            <View className="w-full flex-1 pt-5 pb-8">
+            <View className="w-full flex-1 pt-5 pb-3">
               <Text className="text-gray-100 text-lg font-pregular mb-3">
                 Latest Videos
               </Text>

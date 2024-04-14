@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   ImageBackground, TouchableOpacity,
+  View,
   ViewToken
 } from "react-native";
 
@@ -44,7 +45,7 @@ const TrendingItem = ({ activeItem, item }:{activeItem: any, item: any}) => {
       {play ? (
         <Video
           source={{ uri: item.video }}
-          className="w-52 h-72 rounded-[33px] mt-3 bg-black-100"
+          className="w-52 h-80 rounded-[33px] mt-3 bg-black-100"
           useNativeControls
           resizeMode={ResizeMode.CONTAIN}
           shouldPlay
@@ -64,7 +65,7 @@ const TrendingItem = ({ activeItem, item }:{activeItem: any, item: any}) => {
             source={{
               uri: item.thumbnail,
             }}
-            className="w-52 h-72 rounded-[33px] my-5 overflow-hidden shadow-lg shadow-black/40"
+            className="w-52 h-80 rounded-[33px] my-5 overflow-hidden shadow-lg shadow-black/40"
             resizeMode="cover"
           />
 
@@ -79,6 +80,18 @@ const TrendingItem = ({ activeItem, item }:{activeItem: any, item: any}) => {
   );
 };
 
+const TrendingScroll = ({ activeItem, item }:{activeItem: any, item: any}) => {
+  return (
+    <Animatable.View
+      className="h-full"
+      animation={activeItem === item.$id ? zoomIn : zoomOut}
+      duration={250}
+    >
+      <View className={`h-1.5 w-2.5 ${activeItem === item.$id ? `bg-secondary` : `bg-gray-100/30`} mr-0.5 rounded-full`}></View>
+    </Animatable.View>
+  );
+}
+
 const Trending = ({ posts }: {posts: any}) => {
   const [activeItem, setActiveItem] = useState(posts[0]);
 
@@ -89,6 +102,7 @@ const Trending = ({ posts }: {posts: any}) => {
   };
 
   return (
+    <>
     <FlatList
       data={posts}
       horizontal
@@ -98,11 +112,27 @@ const Trending = ({ posts }: {posts: any}) => {
       )}
       onViewableItemsChanged={viewableItemsChanged}
       viewabilityConfig={{
-        itemVisiblePercentThreshold: 65,
+        itemVisiblePercentThreshold: 85,
       }}
       contentOffset={{ x: 170, y: 0 }}
       showsHorizontalScrollIndicator={false}
-    />
+      />
+      <FlatList
+        data={posts}
+        horizontal
+        className="mx-auto mt-3"
+        keyExtractor={(item) => item.$id}
+        renderItem={({ item }) => (
+          <TrendingScroll activeItem={activeItem} item={item} />
+        )}
+        onViewableItemsChanged={viewableItemsChanged}
+        viewabilityConfig={{
+          itemVisiblePercentThreshold: 85,
+        }}
+        contentOffset={{ x: 170, y: 0 }}
+        showsHorizontalScrollIndicator={false}
+      />
+    </>
   );
 };
 
