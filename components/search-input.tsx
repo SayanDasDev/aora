@@ -14,7 +14,7 @@ const SearchInput = ({
 }) => {
 
   const pathname = usePathname();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery || "");
 
   const handleSearch = () => {
     if(!query) return;
