@@ -5,7 +5,7 @@
     "scheme": "aora",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo-small.png",
+    "icon": "./assets/logo-android.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -22,15 +22,23 @@
       "package": "com.sayandasdev.aora",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo-small.png",
+        "foregroundImage": "./assets/logo-android.png",
         "backgroundColor": "#161622"
       }
     },
     "web": {
-      "favicon": "./assets/images/logo-small.png"
+      "favicon": "./assets/logo-android.png"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8846bebc-2fc8-4f38-bf8c-3daa7023ead9"
+      }
+    }
   }
 }
