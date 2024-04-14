@@ -34,9 +34,25 @@ const Create = () => {
   });
 
   const submit = async () => {
-    if(!form.title || !form.video || !form.thumbnail || !form.prompt){
-      return Alert.alert('All fields required', 'You have left one or more fields empty.')
-    }
+if (!form.title) {
+  return Alert.alert('Title required', 'You have left the title field empty.');
+}
+
+if (!form.video) {
+  return Alert.alert('Video required', 'You have left the video field empty.');
+}
+
+if (!form.thumbnail) {
+  return Alert.alert('Thumbnail required', 'You have left the thumbnail field empty.');
+}
+
+if (!form.prompt) {
+  return Alert.alert('Prompt required', 'You have left the prompt field empty.');
+}
+
+if (!form.userId) {
+  return Alert.alert('User ID required', 'Could not fetch UserID.');
+}
 
     setUploading(true);
 
