@@ -104,6 +104,7 @@ export const signIn = async (email: string, password: string) => {
 export const getAccount = async () => {
   try {
     const currentAccount = await account.get();
+    
     return currentAccount;
   } catch (error: any) {
     if(error instanceof AppwriteException){
@@ -119,6 +120,9 @@ export const getAccount = async () => {
 export const getCurrentUser = async () => {
   try {
     const currentAccount = await getAccount();
+
+    if(!currentAccount) throw new Error("Account not found");
+
     const currentUser = await databases.listDocuments(
       databaseId,
       userCollectionId,

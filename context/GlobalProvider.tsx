@@ -25,6 +25,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    if(!isLoggedIn || !user ) return
     getCurrentUser()
       .then((user: any) => {
         if (user) {
@@ -36,7 +37,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
         }
       })
       .catch((error: any) => {
-        console.log(error);
+        console.error(error);
       })
       .finally(() => {
         setIsLoading(false);
