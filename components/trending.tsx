@@ -3,33 +3,50 @@ import * as Animatable from "react-native-animatable";
 import {
   FlatList,
   Image,
-  ImageBackground, TouchableOpacity,
+  ImageBackground, ImageStyle, TextStyle, TouchableOpacity,
   View,
+  ViewStyle,
   ViewToken
 } from "react-native";
 
 import { icons } from "../constants";
 import { ResizeMode, Video } from "expo-av";
 
-const zoomIn = {
+interface TAnimatable extends Animatable.CustomAnimation<TextStyle & ViewStyle & ImageStyle>{};
+
+const zoomIn: TAnimatable = {
   0: {
-    scaleX: 0.9,
-    scaleY: 0.9,
+    transform: [{ scale: 0.9 }],
   },
   1: {
-    scaleX: 1,
-    scaleY: 1,
+    transform: [{ scale: 1 }],
   },
 };
 
-const zoomOut = {
+const zoomOut: TAnimatable = {
   0: {
-    scaleX: 1,
-    scaleY: 1,
+    transform: [{ scale: 1 }],
   },
   1: {
-    scaleX: 0.9,
-    scaleY: 0.9,
+    transform: [{ scale: 0.9 }],
+  },
+};
+
+const stretch: TAnimatable = {
+  0: {
+    width: 6,
+  },
+  1: {
+    width: 16,
+  },
+};
+
+const compress: TAnimatable = {
+  0: {
+    width: 16,
+  },
+  1: {
+    width: 6,
   },
 };
 
@@ -83,11 +100,11 @@ const TrendingItem = ({ activeItem, item }:{activeItem: any, item: any}) => {
 const TrendingScroll = ({ activeItem, item }:{activeItem: any, item: any}) => {
   return (
     <Animatable.View
-      className="h-full"
-      animation={activeItem === item.$id ? zoomIn : zoomOut}
+      className={`${activeItem === item.$id ? "bg-secondary rounded-full" : "bg-transparent"} mx-1 h-2`}
+      animation={activeItem === item.$id ? stretch : compress}
       duration={250}
     >
-      <View className={`h-1.5 w-2.5 ${activeItem === item.$id ? `bg-secondary` : `bg-gray-100/30`} mr-0.5 rounded-full`}></View>
+      <View className={`h-full w-2 rounded-full ${activeItem === item.$id ? "bg-transparent" : "bg-gray-100/50"}`}></View>
     </Animatable.View>
   );
 }
