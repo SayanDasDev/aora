@@ -1,3 +1,5 @@
+import { TCreateForm } from "@/app/(tabs)/create";
+import { ImagePickerAsset } from "expo-image-picker";
 import {
   Account,
   AppwriteException,
@@ -6,7 +8,7 @@ import {
   Databases,
   ID,
   Query,
-  // Storage,
+  Storage,
 } from "react-native-appwrite/src";
 
 export const appwriteConfig = {
@@ -16,6 +18,7 @@ export const appwriteConfig = {
   databaseId: "sayandasdev_aora",
   userCollectionId: "users",
   videoCollectionId: "videos",
+  storageId: "files"
 };
 
 const {
@@ -25,6 +28,7 @@ const {
   databaseId,
   userCollectionId,
   videoCollectionId,
+  storageId,
 } = appwriteConfig;
 
 const client = new Client();
@@ -37,6 +41,7 @@ client
 const account = new Account(client);
 const avatars = new Avatars(client);
 const databases = new Databases(client);
+const storage = new Storage(client);
 
 export const createUser = async (email: string, password: string, username: string) => {   
 	try {
@@ -136,7 +141,11 @@ export const getCurrentUser = async () => {
 
 export const getAllPosts = async () => {
   try {
-    const posts = await databases.listDocuments(databaseId, videoCollectionId);
+    const posts = await databases.listDocuments(
+      databaseId, 
+      videoCollectionId,
+      [Query.orderDesc('$createdAt')]
+    );
     return posts.documents;
   } catch (error: any) {
     if(error instanceof AppwriteException){
@@ -211,6 +220,102 @@ export const signOut = async () => {
     const session = await account.deleteSession("current");
 
     return session;
+  } catch (error: any) {
+    if(error instanceof AppwriteException){
+      console.error(error);
+      throw error;
+    }else{
+      console.error(error);
+      throw new Error(error);
+    }
+  }
+}
+
+export const getFilePreview = async (fileId: string, type: string) => {
+  let fileUrl;
+
+  try {
+    if(type === "image"){
+      fileUrl = await storage.getFilePreview(storageId, fileId, 2000, 2000, 'top', 100);
+    }else if(type === "video"){
+      fileUrl = await storage.getFileView(storageId, fileId);
+    }else{
+      throw new Error('Invalid file type')
+    }
+
+    if(!fileUrl) throw Error;
+
+    return fileUrl;
+  } catch (error: any) {
+    if(error instanceof AppwriteException){
+      console.error(error);
+      throw error;
+    }else{
+      console.error(error);
+      throw new Error(error);
+    }  
+    
+  }
+}
+
+export const uploadFile = async (file: ImagePickerAsset | null, type: string) => {
+
+  //@ts-expect-error
+  if(!file || !file.fileName || !file.mimeType || !file.filesize) {
+    console.log(file);
+    throw new Error("File not found")
+  };
+  
+  const asset = {
+    name: file.fileName,
+    type: file.mimeType,
+    //@ts-expect-error
+    size: file.filesize,
+    uri: file.uri,
+}
+
+  try {
+    const uploadFile = await storage.createFile(
+      storageId,
+      ID.unique(),
+      asset
+    );
+
+    const fileUrl = await getFilePreview(uploadFile.$id, type);
+
+    return fileUrl;
+  } catch (error) {
+    if(error instanceof AppwriteException){
+      console.error(error);
+      throw error;
+    }else{
+      console.error(error);
+      throw new Error("Upload failed");
+    }  
+  }
+}
+
+export const createVideo = async (form : TCreateForm) => {
+  try {
+    const [thumbnailUrl, videoUrl] = await Promise.all([
+      uploadFile(form.thumbnail, "image"),
+      uploadFile(form.video, "video"),
+    ]);
+  
+    const newPost = await databases.createDocument(
+      databaseId,
+      videoCollectionId,
+      ID.unique(),
+      {
+        title: form.title,
+        prompt: form.prompt,
+        thumbnail: thumbnailUrl,
+        video: videoUrl,
+        creator: form.userId,
+      }
+    );
+    
+    return newPost;
   } catch (error: any) {
     if(error instanceof AppwriteException){
       console.error(error);
