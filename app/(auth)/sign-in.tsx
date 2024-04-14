@@ -5,10 +5,13 @@ import { images } from '@/constants'
 import FormField from '@/components/form-field'
 import CustomButton from '@/components/custom-button'
 import { Link, router } from 'expo-router'
-import { signIn } from '@/lib/appwrite'
+import { getCurrentUser, signIn } from '@/lib/appwrite'
 import { AppwriteException } from 'react-native-appwrite/src'
+import { useGlobalContext } from '@/context/GlobalProvider'
 
 const SignIn = () => {
+
+  const {setUser, setIsLoggedIn} = useGlobalContext();
 
   const [form, setForm] = useState(
     {
@@ -28,7 +31,9 @@ const SignIn = () => {
     setIsSubmitting(true);
     try {
       await signIn(form.email, form.password);
-      //TODO: Set it to global state
+      const result = getCurrentUser();
+      setUser(result);
+      setIsLoggedIn(true);
       router.replace("/home");
     } catch (error: any) {
       if (error instanceof AppwriteException) {

@@ -7,6 +7,7 @@ import CustomButton from "@/components/custom-button";
 import { Link, router } from "expo-router";
 import { createUser } from "@/lib/appwrite";
 import { AppwriteException } from "react-native-appwrite/src";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -14,6 +15,8 @@ const SignIn = () => {
     email: "",
     password: "",
   });
+
+  const { setUser, setIsLoggedIn } = useGlobalContext();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,7 +29,8 @@ const SignIn = () => {
     setIsSubmitting(true);
     try {
       const result = await createUser(form.email, form.password, form.username);
-      //TODO: Set it to global state
+      setUser(result);
+      setIsLoggedIn(true);
       router.replace("/home");
     } catch (error: any) {
       if (error instanceof AppwriteException) {
