@@ -1,31 +1,43 @@
 import { View, TextInput, KeyboardTypeOptions, TouchableOpacity, Image } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { icons } from "@/constants";
+import { router, usePathname } from "expo-router";
 
 const SearchInput = ({
-  value,
   placeholder,
-  handleChangeText,
   otherStyles,
-  keyboardType,
+  initialQuery
 }: {
-  value: string;
   placeholder?: string;
-  handleChangeText: (value: string) => void;
   otherStyles?: string;
-  keyboardType?: KeyboardTypeOptions;
+  initialQuery?: string;
 }) => {
+
+  const pathname = usePathname();
+  const [query, setQuery] = useState("");
+
+  const handleSearch = () => {
+    if(!query) return;
+    if(pathname.startsWith("/search")) {
+      router.setParams({ query });
+    } else {
+      router.push(`/search/${query}`)
+    }
+  }
+
   return (
     <View className={`w-full flex-row h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 items-center focus:border-secondary space-x-4 ${otherStyles}`}>
       <TextInput
         className="flex-1 text-white mt-0.5 font-pregular text-base"
-        value={value}
+        value={query}
         placeholder={placeholder}
         placeholderTextColor="#7b7b8b"
-        onChangeText={handleChangeText}
-        keyboardType={keyboardType}
+        onChangeText={(e)=>setQuery(e)}
+        onSubmitEditing={handleSearch}
       />
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleSearch}
+      >
         <Image
           source={icons.search}
           className="w-5 h-5"
