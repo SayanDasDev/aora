@@ -161,6 +161,7 @@ const Create = () => {
         <CustomButton
           title="Submit and Publish"
           handlePress={submit}
+          isLoading={uploading}
           containerStyles="mt-7 mb-10"
         />
       </ScrollView>

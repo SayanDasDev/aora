@@ -19,11 +19,12 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sayandasdev.aora",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo-small.png",
         "backgroundColor": "#161622"
-      },
-      "package": "com.sayandasdev.aora"
+      }
     },
     "web": {
       "favicon": "./assets/images/logo-small.png"
