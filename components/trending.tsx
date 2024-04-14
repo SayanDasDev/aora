@@ -3,10 +3,8 @@ import * as Animatable from "react-native-animatable";
 import {
   FlatList,
   Image,
-  ImageBackground,
-  Text,
-  TouchableOpacity,
-  ViewToken,
+  ImageBackground, TouchableOpacity,
+  ViewToken
 } from "react-native";
 
 import { icons } from "../constants";
